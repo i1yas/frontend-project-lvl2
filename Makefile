@@ -6,3 +6,5 @@ link:
 	npm link
 lint:
 	npx eslint .
+test:
+	npx jest --config ./jest.config.js --watch
