@@ -4,9 +4,10 @@ import _ from 'lodash';
 
 const parseFile = (filePath) => {
   const extension = path.extname(filePath);
+  const fullPath = path.resolve(filePath);
 
   if (extension === '.json') {
-    return JSON.parse(fs.readFileSync(filePath).toString());
+    return JSON.parse(fs.readFileSync(fullPath).toString());
   }
 
   throw new Error('Unknown file format');
