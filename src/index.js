@@ -1,17 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
-
-const parseFile = (filePath) => {
-  const extension = path.extname(filePath);
-  const fullPath = path.resolve(filePath);
-
-  if (extension === '.json') {
-    return JSON.parse(fs.readFileSync(fullPath).toString());
-  }
-
-  throw new Error('Unknown file format');
-};
+import getParser from './parsers.js';
 
 const getObjectsDiff = (oldObj, newObj) => {
   const oldKeys = Object.keys(oldObj);
@@ -42,10 +32,17 @@ const getObjectsDiff = (oldObj, newObj) => {
   return diff;
 };
 
+const readFile = (filePath) => {
+  const fullPath = path.resolve(filePath);
+  return fs.readFileSync(fullPath).toString();
+};
+
 const genDiff = (oldFilePath, newFilePath) => {
+  const parse = getParser(path.extname(oldFilePath));
+
   try {
-    const oldObj = parseFile(oldFilePath);
-    const newObj = parseFile(newFilePath);
+    const oldObj = parse(readFile(oldFilePath));
+    const newObj = parse(readFile(newFilePath));
     const diff = getObjectsDiff(oldObj, newObj);
     return ['{', diff, '}'].flat().join('\n');
   } catch (e) {

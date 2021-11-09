@@ -33,6 +33,7 @@
     "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-jest": "^25.2.3",
     "jest": "^27.3.1",
+    "js-yaml": "^4.1.0",
     "lodash": "^4.17.21"
   }
 }
