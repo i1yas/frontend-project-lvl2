@@ -13,29 +13,20 @@ const parseFile = (filePath) => {
   throw new Error('Unknown file format');
 };
 
-const genDiff = (oldFilePath, newFilePath) => {
-  let oldContent;
-  let newContent;
+const getObjectsDiff = (oldObj, newObj) => {
+  const oldKeys = Object.keys(oldObj);
+  const newKeys = Object.keys(newObj);
+  const allKeys = [].concat(oldKeys, newKeys);
+  const uniqKeys = _.uniq(allKeys).sort();
 
-  try {
-    oldContent = parseFile(oldFilePath);
-    newContent = parseFile(newFilePath);
-  } catch (e) {
-    return e.message;
-  }
+  const diff = uniqKeys.reduce((acc, key) => {
+    const oldValue = oldObj[key];
+    const newValue = newObj[key];
 
-  const oldKeys = Object.keys(oldContent);
-  const newKeys = Object.keys(newContent);
-  const allKeys = _.uniq([].concat(oldKeys, newKeys)).sort();
-
-  const diff = allKeys.reduce((acc, key) => {
-    const oldValue = oldContent[key];
-    const newValue = newContent[key];
-
-    if (_.has(oldContent, key) && !_.has(newContent, key)) {
+    if (_.has(oldObj, key) && !_.has(newObj, key)) {
       return acc.concat(`  - ${key}: ${oldValue}`);
     }
-    if (!_.has(oldContent, key) && _.has(newContent, key)) {
+    if (!_.has(oldObj, key) && _.has(newObj, key)) {
       return acc.concat(`  + ${key}: ${newValue}`);
     }
     if (oldValue === newValue) {
@@ -48,7 +39,18 @@ const genDiff = (oldFilePath, newFilePath) => {
     );
   }, []);
 
-  return ['{', diff, '}'].flat().join('\n');
+  return diff;
+};
+
+const genDiff = (oldFilePath, newFilePath) => {
+  try {
+    const oldObj = parseFile(oldFilePath);
+    const newObj = parseFile(newFilePath);
+    const diff = getObjectsDiff(oldObj, newObj);
+    return ['{', diff, '}'].flat().join('\n');
+  } catch (e) {
+    return e.message;
+  }
 };
 
 export default genDiff;
