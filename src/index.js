@@ -12,46 +12,42 @@ const parseFile = (filePath) => {
   throw new Error('Unknown file format');
 };
 
-const keyExists = (obj, key) => Object.hasOwnProperty.call(obj, key);
-
-const genDiff = (file1Path, file2Path) => {
-  let content1;
-  let content2;
+const genDiff = (oldFilePath, newFilePath) => {
+  let oldContent;
+  let newContent;
 
   try {
-    content1 = parseFile(file1Path);
-    content2 = parseFile(file2Path);
+    oldContent = parseFile(oldFilePath);
+    newContent = parseFile(newFilePath);
   } catch (e) {
     return e.message;
   }
 
-  const keys1 = Object.keys(content1);
-  const keys2 = Object.keys(content2);
-  const allKeys = _.uniq(keys1.concat(keys2)).sort();
+  const oldKeys = Object.keys(oldContent);
+  const newKeys = Object.keys(newContent);
+  const allKeys = _.uniq([].concat(oldKeys, newKeys)).sort();
 
-  const diff = [];
+  const diff = allKeys.reduce((acc, key) => {
+    const oldValue = oldContent[key];
+    const newValue = newContent[key];
 
-  for (const key of allKeys) {
-    const value1 = content1[key];
-    const value2 = content2[key];
-
-    if (keyExists(content1, key) && !keyExists(content2, key)) {
-      diff.push(`  - ${key}: ${value1}`);
-      continue;
+    if (_.has(oldContent, key) && !_.has(newContent, key)) {
+      return acc.concat(`  - ${key}: ${oldValue}`);
     }
-    if (!keyExists(content1, key) && keyExists(content2, key)) {
-      diff.push(`  + ${key}: ${value2}`);
-      continue;
+    if (!_.has(oldContent, key) && _.has(newContent, key)) {
+      return acc.concat(`  + ${key}: ${newValue}`);
     }
-    if (value1 === value2) {
-      diff.push(`    ${key}: ${value1}`);
-      continue;
+    if (oldValue === newValue) {
+      return acc.concat(`    ${key}: ${oldValue}`);
     }
-    diff.push(`  - ${key}: ${value1}`);
-    diff.push(`  + ${key}: ${value2}`);
-  }
 
-  return ['{'].concat(diff, '}').join('\n');
+    return acc.concat(
+      `  - ${key}: ${oldValue}`,
+      `  + ${key}: ${newValue}`,
+    );
+  }, []);
+
+  return ['{', diff, '}'].flat().join('\n');
 };
 
 export default genDiff;
