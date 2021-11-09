@@ -15,5 +15,12 @@ jobs:
 
       - name: Install deps
         run: make install
-      - name: Run tests
+      - name: Test and publish code coverage 
+        uses: paambaati/codeclimate-action@v2.7.4
+        # codeclimate secret
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         run: make test
+        with:
+          coverageCommand: make test-coverage
+          debug: true
