@@ -1,5 +1,17 @@
 import fs from 'fs';
 import genDiff from '../src';
+import getParser from '../src/parsers';
+
+test('fixtures equal', () => {
+  const read = (n, ext) => {
+    const fileContent = fs.readFileSync(`./__fixtures__/file${n}${ext}`).toString();
+    const parse = getParser(ext);
+    return parse(fileContent);
+  };
+
+  expect(read(1, '.json')).toEqual(read(1, '.yml'));
+  expect(read(2, '.json')).toEqual(read(2, '.yml'));
+});
 
 test('diff of 2 json files', () => {
   const filePath1 = './__fixtures__/file1.json';
