@@ -45,7 +45,7 @@ const stylish = (diff) => {
 const getFormatter = (type = 'stylish') => {
   if (type === 'stylish') return stylish;
 
-  throw new Error('Unknown formatter type');
+  throw new Error(`Unknown formatter type '${type}'`);
 };
 
 export default getFormatter;
