@@ -1,15 +1,15 @@
 const stylish = (diff) => {
   const diffSymbols = {
     same: ' ',
-    removed: '-',
-    added: '+',
+    remove: '-',
+    add: '+',
   };
 
   const space = ' ';
 
-  const getIndent = (itemType, depth) => {
-    const diffSymbol = diffSymbols[itemType];
-    return space.repeat(4 * (depth - 1)) + space.repeat(2) + diffSymbol + space;
+  const getIndent = (itemType, depth, diffSymbol = space) => {
+    const nestedIndent = space.repeat(4 * (depth - 1));
+    return nestedIndent + space.repeat(2) + diffSymbol + space;
   };
 
   const wrapWithBrackets = (value, depth) => ['{', value, `${space.repeat(4 * (depth - 1))}}`].join('\n');
@@ -27,10 +27,22 @@ const stylish = (diff) => {
   };
 
   const iter = (value, depth) => {
-    const lines = value.map((item) => {
+    const lines = value.flatMap((item) => {
       if (item.children) {
         const nestedValue = iter(item.children, depth + 1);
         return `${getIndent(item.type, depth)}${item.key}: ${nestedValue}`;
+      }
+
+      if (item.change === 'update') {
+        return [
+          `${getIndent(item.type, depth, '-')}${item.key}: ${stringify(item.removedValue, depth + 1)}`,
+          `${getIndent(item.type, depth, '+')}${item.key}: ${stringify(item.addedValue, depth + 1)}`,
+        ];
+      }
+
+      if (item.change) {
+        const symbol = diffSymbols[item.change];
+        return `${getIndent(item.type, depth, symbol)}${item.key}: ${stringify(item.value, depth + 1)}`;
       }
 
       return `${getIndent(item.type, depth)}${item.key}: ${stringify(item.value, depth + 1)}`;

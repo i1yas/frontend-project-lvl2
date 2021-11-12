@@ -18,20 +18,29 @@ const getValuesDiff = (oldObj, newObj) => {
       const v2 = obj2[key];
 
       const isEqual = isPrimitive(v1) && isPrimitive(v2) && v1 === v2;
+
       if (isEqual) {
-        return { key, value: v1, type: 'same' };
+        return { key, value: v1 };
       }
 
       const isBothObjects = !isPrimitive(v1) && !isPrimitive(v2);
       const isChanged = !isBothObjects;
-      if (isChanged) {
-        return [
-          _.has(obj1, key) && { key, value: v1, type: 'removed' },
-          _.has(obj2, key) && { key, value: v2, type: 'added' },
-        ].filter(Boolean);
+
+      if (isChanged && _.has(obj1, key) && _.has(obj2, key)) {
+        return {
+          key, change: 'update', removedValue: v1, addedValue: v2,
+        };
       }
 
-      return { key, children: iter(v1, v2, depth + 1), type: 'same' };
+      if (isChanged && _.has(obj1, key)) {
+        return { key, change: 'remove', value: v1 };
+      }
+
+      if (isChanged && _.has(obj2, key)) {
+        return { key, change: 'add', value: v2 };
+      }
+
+      return { key, children: iter(v1, v2, depth + 1) };
     });
   };
 
