@@ -42,8 +42,8 @@ const stylish = (diff) => {
   return iter(diff, 1);
 };
 
-const getFormatter = (type = 'json') => {
-  if (type === 'json') return stylish;
+const getFormatter = (type = 'stylish') => {
+  if (type === 'stylish') return stylish;
 
   throw new Error('Unknown formatter type');
 };
