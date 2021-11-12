@@ -54,8 +54,46 @@ const stylish = (diff) => {
   return iter(diff, 1);
 };
 
+const plain = (diff) => {
+  const stringify = (value) => {
+    if (value instanceof Object) return '[complex value]';
+    if (typeof value === 'string') return `'${value}'`;
+    return value;
+  };
+
+  const iter = (value, path) => {
+    const lines = value.map((item) => {
+      const newPath = path.concat(item.key);
+      const pathStr = newPath.join('.');
+
+      if (item.change === 'update') {
+        return `Property '${pathStr}' was updated. From ${stringify(item.removedValue)} to ${stringify(item.addedValue)}`;
+      }
+
+      if (item.change === 'remove') {
+        return `Property '${pathStr}' was removed`;
+      }
+
+      if (item.change === 'add') {
+        return `Property '${pathStr}' was added with value: ${stringify(item.value)}`;
+      }
+
+      if (item.children) {
+        return iter(item.children, newPath);
+      }
+
+      return null;
+    });
+
+    return lines.filter(Boolean).join('\n');
+  };
+
+  return iter(diff, []);
+};
+
 const getFormatter = (type = 'stylish') => {
   if (type === 'stylish') return stylish;
+  if (type === 'plain') return plain;
 
   throw new Error(`Unknown formatter type '${type}'`);
 };

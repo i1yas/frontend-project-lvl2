@@ -31,6 +31,15 @@ test('diff of 2 yaml files', () => {
   const diff = genDiff(filePath1, filePath2);
 
   const expectedDiff = fs.readFileSync('./__fixtures__/diff.1.2.txt').toString();
+  expect(diff).toBe(expectedDiff);
+});
 
+test('plain formatter', () => {
+  const filePath1 = './__fixtures__/file1.yml';
+  const filePath2 = './__fixtures__/file2.yml';
+
+  const diff = genDiff(filePath1, filePath2, 'plain');
+
+  const expectedDiff = fs.readFileSync('./__fixtures__/diff.plain.1.2.txt').toString();
   expect(diff).toBe(expectedDiff);
 });
