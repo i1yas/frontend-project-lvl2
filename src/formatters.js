@@ -1,3 +1,5 @@
+const json = (diff) => JSON.stringify(diff, null, 2);
+
 const stylish = (diff) => {
   const diffSymbols = {
     same: ' ',
@@ -94,6 +96,7 @@ const plain = (diff) => {
 const getFormatter = (type = 'stylish') => {
   if (type === 'stylish') return stylish;
   if (type === 'plain') return plain;
+  if (type === 'json') return json;
 
   throw new Error(`Unknown formatter type '${type}'`);
 };
