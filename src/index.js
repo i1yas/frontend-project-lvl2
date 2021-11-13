@@ -11,7 +11,7 @@ const getValuesDiff = (oldObj, newObj) => {
     const keys1 = Object.keys(obj1);
     const keys2 = Object.keys(obj2);
     const allKeys = [].concat(keys1, keys2);
-    const uniqKeys = _.uniq(allKeys).sort();
+    const uniqKeys = _.sortBy(_.uniq(allKeys));
 
     return uniqKeys.flatMap((key) => {
       const v1 = obj1[key];
