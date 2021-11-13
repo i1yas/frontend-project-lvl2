@@ -34,26 +34,20 @@ test('diff of 2 yaml files', () => {
   expect(diff).toBe(expectedDiff);
 });
 
-describe('additional formaters', () => {
-  let filePath1;
-  let filePath2;
+test('plain formatter', () => {
+  const filePath1 = './__fixtures__/file1.yml';
+  const filePath2 = './__fixtures__/file2.yml';
+  const diff = genDiff(filePath1, filePath2, 'plain');
 
-  beforeEach(() => {
-    filePath1 = './__fixtures__/file1.yml';
-    filePath2 = './__fixtures__/file2.yml';
-  });
+  const expectedDiff = fs.readFileSync('./__fixtures__/diff.plain.1.2.txt').toString();
+  expect(diff).toBe(expectedDiff);
+});
 
-  test('plain formatter', () => {
-    const diff = genDiff(filePath1, filePath2, 'plain');
+test('json formatter', () => {
+  const filePath1 = './__fixtures__/file1.yml';
+  const filePath2 = './__fixtures__/file2.yml';
+  const diff = genDiff(filePath1, filePath2, 'json');
 
-    const expectedDiff = fs.readFileSync('./__fixtures__/diff.plain.1.2.txt').toString();
-    expect(diff).toBe(expectedDiff);
-  });
-
-  test('json formatter', () => {
-    const diff = genDiff(filePath1, filePath2, 'json');
-
-    const expectedDiff = fs.readFileSync('./__fixtures__/diff.json.1.2.txt').toString();
-    expect(diff).toBe(expectedDiff);
-  });
+  const expectedDiff = fs.readFileSync('./__fixtures__/diff.json.1.2.txt').toString();
+  expect(diff).toBe(expectedDiff);
 });
